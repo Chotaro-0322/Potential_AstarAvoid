@@ -13,20 +13,17 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   eigen_conversions
   grid_map_ros
+  sensor_msgs
+  pcl_ros
+  geometry_msgs
 )
 
+find_package(PCL 1.3 REQUIRED COMPONENTS)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
 # Fetch rapidjson
-include(FetchContent)
-FetchContent_Declare(
-    rapidjson
-    GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-    GIT_TAG        v1.1.0
-)
-FetchContent_GetProperties(rapidjson)
-if(NOT rapidjson_POPULATED)
-  FetchContent_Populate(rapidjson)
-endif()
-include_directories(${rapidjson_SOURCE_DIR}/include)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -119,8 +116,8 @@ include_directories(${rapidjson_SOURCE_DIR}/include)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES potential_display
-#  CATKIN_DEPENDS roscpp rospy std::msgs
+#  LIBRARIES potential_display  
+  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs pcl pcl_ros
 #  DEPENDS system_lib
 )
 
@@ -149,6 +146,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(potential_display src/potential_display.cpp)
+add_executable(cal_potential_lidar src/cal_potential_lidar.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -162,6 +160,9 @@ add_executable(potential_display src/potential_display.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(potential_display
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(cal_potential_lidar
   ${catkin_LIBRARIES}
 )
 
